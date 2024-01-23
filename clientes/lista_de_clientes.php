@@ -1,3 +1,18 @@
+<?php
+session_start();
+include('C:\xampp\htdocs\bj_oriente\conexion.php');
+
+if (isset($_POST["Borrar"])) {
+    // Procesar el borrado del cliente
+    $id_cliente_borrar = $_POST["id_cliente_borrar"];
+    $borrar_cliente = $conexion->query("DELETE FROM cliente WHERE id_cliente = '$id_cliente_borrar'");
+    if ($borrar_cliente) {
+        header("Location: lista_de_clientes.php");
+    }
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="es">
   <head>
@@ -12,7 +27,7 @@
     />
     <link rel="stylesheet" href="css/style.css" />
 
-    <title>JBOriente</title>
+    <title>JBOriente | Lista de Clientes</title>
   </head>
   <body>
     <header class="">
@@ -35,14 +50,12 @@
           <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#"
-                  >Inicio</a
-                >
+                <a class="nav-link" aria-current="page" href="">Inicio</a>
               </li>
               <li class="nav-item dropdown">
                 <a
-                  class="nav-link dropdown-toggle"
-                  href="#"
+                  class="nav-link dropdown-toggle active"
+                  href="C:\xampp\htdocs\bj_oriente\index.html"
                   role="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
@@ -51,16 +64,12 @@
                 </a>
                 <ul class="dropdown-menu">
                   <li>
-                    <a class="dropdown-item" href="clientes/crearcliente.php"
+                    <a class="dropdown-item" href="crearcliente.php"
                       >Crear Cliente</a
                     >
                   </li>
                   <li>
-                    <a
-                      class="dropdown-item"
-                      href="/clientes/lista_de_clientes.php"
-                      >Lista de Clientes</a
-                    >
+                    <a class="dropdown-item" href="lista_de_clientes.php">Lista de Clientes</a>
                   </li>
                 </ul>
               </li>
@@ -111,22 +120,42 @@
         </div>
       </nav>
     </header>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      $(document).ready(function () {
-        // Selecciona los elementos del menú desplegable y activa el evento al pasar el cursor
-        $(".nav-item.dropdown").mouseenter(function () {
-          $(this).addClass("show");
-          $(this).find(".dropdown-menu").addClass("show");
-        });
+    <table class="table table-striped table-bordered">
+          <tr>
+            <th>Id</th>
+            <th>Id usuario</th>
+            <th>Id documento</th>
+            <th>Documento</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Correo</th>
+            <th>Telefono</th>
+            <th>Dirección</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
+          </tr>
+          <?php
+          $seleccionar = $conexion->query("SELECT * FROM cliente");
+          while ($datos_obtenidos = $seleccionar->fetch_assoc()) {
 
-        // Desactiva el menú desplegable al salir del enlace
-        $(".nav-item.dropdown").mouseleave(function () {
-          $(this).removeClass("show");
-          $(this).find(".dropdown-menu").removeClass("show");
-        });
-      });
-    </script>
+          ?>
+            <tr>
+              <td><?php echo $datos_obtenidos['id_cliente'] ?></td>
+              <td><?php echo $datos_obtenidos['id_usuario'] ?></td>
+              <td><?php echo $datos_obtenidos['id_tipo_documento'] ?></td>
+              <td><?php echo $datos_obtenidos['documento'] ?></td>
+              <td><?php echo $datos_obtenidos['nombre'] ?></td>
+              <td><?php echo $datos_obtenidos['apellido']; ?></td>
+              <td><?php echo $datos_obtenidos['correo']; ?></td>
+              <td><?php echo $datos_obtenidos['telefono']; ?></td>
+              <td><?php echo $datos_obtenidos['direccion']; ?></td>
+              <td><a class="actualizar" href="editar_cliente.php?id_cliente=<?php echo $datos_obtenidos['id_cliente'] ?>">Actualizar </td>
+              <td><form method="post">
+                    <input type="hidden" name="id_cliente_borrar" value="<?php echo $datos_obtenidos['id_cliente']; ?>"/>
+                    <input type="submit" name="Borrar" value="Eliminar"/>
+                </form></td>
+            </tr>
+          <?php } ?>
+        </table>
   </body>
 </html>
