@@ -1,3 +1,14 @@
+<?php
+include('C:\xampp\htdocs\bj_oriente\controlador_sesion.php');
+include('C:\xampp\htdocs\bj_oriente\conexion.php');
+
+if (empty($_SESSION['id_usuario'])) {
+    header("Location: index.html");
+    exit();
+}
+$id_usuario = $_SESSION['id_usuario'];
+?>
+
 <!DOCTYPE html>
 <html lang="es">
   <head>
@@ -35,12 +46,12 @@
           <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
               <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">Inicio</a>
+                <a class="nav-link" aria-current="page" href="">Inicio</a>
               </li>
               <li class="nav-item dropdown">
                 <a
                   class="nav-link dropdown-toggle active"
-                  href="#"
+                  href="bj_oriente\index.html"
                   role="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
@@ -54,7 +65,7 @@
                     >
                   </li>
                   <li>
-                    <a class="dropdown-item" href="#">Lista de Clientes</a>
+                    <a class="dropdown-item" href="lista_de_clientes.php">Lista de Clientes</a>
                   </li>
                 </ul>
               </li>
@@ -107,62 +118,99 @@
     </header>
 
     <main class="container py-4 bg-primary">
+      <form method="POST">
       <h1 class="m-4">Crear Cliente</h1>
 
       <h2 class="m-4">Información básica del cliente</h2>
-
-      <!-- INFROMACION DEL CLIENTE -->
-      <form action="">
-        <!-- Pendiente por revisar -->
-        <label for="cliente-documento" class="form-label"
-          >Cedula / NIT / Pasaporte / ETC</label
+      <input type="hidden" name="id_usuario" value="<?php echo $id_usuario; ?>">
+      <label for="id_tipo_documento" class="form-label">Tipo de Documento</label>
+<select class="form-control M-4" name="id_tipo_documento">
+    <option value="1">Targeta de identidad</option>
+    <option value="2">Cedula</option>
+</select>
+        <label for="documento" class="form-label"
+          >Ingrese su documento</label
         >
         <input
           type="text"
           class="form-control M-4"
-          id="cliente-documento"
-          placeholder="Ingrese La Cedula del Cliente"
+          name="documento"
+          placeholder="Ingrese el documento del Cliente"
         />
 
-        <label for="cliente-nombre" class="form-label">Cliente</label>
+        <label for="cliente-nombre" class="form-label">Nombre</label>
         <input
           type="text"
           class="form-control M-4"
-          id="cliente-nombre"
+          name="nombre"
           placeholder="Ingrese El Nombre Del Cliente"
         />
 
-        <label for="cliente-direccion" class="form-label">Dirección</label>
+        <label for="cliente-nombre" class="form-label">Apellido</label>
         <input
           type="text"
           class="form-control M-4"
-          id="cliente-direccion"
-          placeholder="Ingrese El Dirección Del Cliente"
-        />
-
-        <label for="cliente-nombre" class="form-label"
-          >Telefono del Cliente</label
-        >
-        <input
-          type="text"
-          class="form-control M-4"
-          id="cliente-telefono"
-          placeholder="Ingrese El Telefono Del Cliente"
+          name="apellido"
+          placeholder="Ingrese El Apellido Del Cliente"
         />
 
         <label for="cliente-nombre" class="form-label"
           >Correo del Cliente</label
         >
         <input
-          type="correo"
+          type="text"
           class="form-control M-4"
-          id="cliente-correo"
+          name="correo"
           placeholder="Ingrese El Correo Del Cliente"
         />
+        <label for="cliente-nombre" class="form-label"
+          >Telefono del Cliente</label
+        >
+        <input
+          type="tel"
+          class="form-control M-4"
+          name="telefono"
+          placeholder="Ingrese El Telefono Del Cliente"
+        />
 
-        <button class="btn btn-primary bg-light text-dark m-4" type="button">
-          Crear
-        </button>
+        <label for="cliente-direccion" class="form-label">Dirección</label>
+        <input
+          type="text"
+          class="form-control M-4"
+          name="direccion"
+          placeholder="Ingrese El Dirección Del Cliente"
+        />
+
+        <input type="submit" name="Crear" value="Crear"  class="btn btn-primary bg-light text-dark m-4">
+         
+        <!-- codigo php para la creacion de clientes-->
+        <?php
+          if (!empty($_POST["Crear"])) {
+            //ng hace referencia a nuevo cliente para evitar posibles confusiones con otras variables
+            $id_usuario = $_POST['id_usuario'];
+            $id_tipo_documento = $_POST['id_tipo_documento'];
+            $ng_documento = $_POST['documento'];
+            $ng_nombre = $_POST['nombre'];
+            $ng_apellido = $_POST['apellido'];
+            $ng_correo = $_POST['correo'];
+            $ng_telefono = $_POST['telefono'];
+            $ng_direccion = $_POST['direccion'];
+            try {
+              $insertar_nuevo_cliente = $conexion->query("INSERT INTO cliente( id_usuario, id_tipo_documento, documento, nombre, apellido, correo,
+              telefono, direccion) VALUES('$id_usuario', '$id_tipo_documento', '$ng_documento', '$ng_nombre', '$ng_apellido', '$ng_correo',
+              '$ng_telefono', '$ng_direccion')");
+
+              if ($insertar_nuevo_cliente === false) {
+                throw new Exception('Error al enviar la consulta:');
+                header("Location: crearcliente.php");
+              }
+            } catch (Exception $e) {
+              echo '<script type="text/javascript">';
+              echo 'alert("No se pudo registrar al nuevo cliente: ' . $e->getMessage() . '");';
+              echo '</script>';
+            }
+          }
+          ?>
       </form>
     </main>
 
